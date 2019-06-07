@@ -1,123 +1,20 @@
 <template>
   <div class="movie_body">
     <ul>
-      <li>
+      <li v-for="item in movieList" :key="item.id">
         <div class="pic_show">
-          <img src="~@/assets/img/movie_1.jpg">
+          <img :src="item.img |setWH('128.180') ">
         </div>
+        
         <div class="info_list">
-          <h2>无名之辈</h2>
+          <div class="dd_icon" v-if="item.version">3Dimax</div>
+          <h2>{{item.nm}}</h2>
           <p>
             观众评
-            <span class="grade">9.2</span>
+            <span class="grade">{{item.sc}}</span>
           </p>
-          <p>主演: 陈建斌,任素汐,潘斌龙</p>
-          <p>今天55家影院放映607场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="~@/assets/img/movie_2.jpg">
-        </div>
-        <div class="info_list">
-          <h2>毒液：致命守护者</h2>
-          <p>
-            观众评
-            <span class="grade">9.3</span>
-          </p>
-          <p>主演: 汤姆·哈迪,米歇尔·威廉姆斯,里兹·阿迈德</p>
-          <p>今天56家影院放映443场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="~@/assets/img/movie_1.jpg">
-        </div>
-        <div class="info_list">
-          <h2>无名之辈</h2>
-          <p>
-            观众评
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演: 陈建斌,任素汐,潘斌龙</p>
-          <p>今天55家影院放映607场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="~@/assets/img/movie_2.jpg">
-        </div>
-        <div class="info_list">
-          <h2>毒液：致命守护者</h2>
-          <p>
-            观众评
-            <span class="grade">9.3</span>
-          </p>
-          <p>主演: 汤姆·哈迪,米歇尔·威廉姆斯,里兹·阿迈德</p>
-          <p>今天56家影院放映443场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="~@/assets/img/movie_1.jpg">
-        </div>
-        <div class="info_list">
-          <h2>无名之辈</h2>
-          <p>
-            观众评
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演: 陈建斌,任素汐,潘斌龙</p>
-          <p>今天55家影院放映607场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="~@/assets/img/movie_2.jpg">
-        </div>
-        <div class="info_list">
-          <h2>毒液：致命守护者</h2>
-          <p>
-            观众评
-            <span class="grade">9.3</span>
-          </p>
-          <p>主演: 汤姆·哈迪,米歇尔·威廉姆斯,里兹·阿迈德</p>
-          <p>今天56家影院放映443场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="~@/assets/img/movie_1.jpg">
-        </div>
-        <div class="info_list">
-          <h2>无名之辈</h2>
-          <p>
-            观众评
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演: 陈建斌,任素汐,潘斌龙</p>
-          <p>今天55家影院放映607场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="~@/assets/img/movie_2.jpg">
-        </div>
-        <div class="info_list">
-          <h2>毒液：致命守护者</h2>
-          <p>
-            观众评
-            <span class="grade">9.3</span>
-          </p>
-          <p>主演: 汤姆·哈迪,米歇尔·威廉姆斯,里兹·阿迈德</p>
-          <p>今天56家影院放映443场</p>
+          <p>主演: {{item.star}}</p>
+          <p>{{item.showInfo}}</p>
         </div>
         <div class="btn_mall">购票</div>
       </li>
@@ -126,8 +23,30 @@
 </template>
 
 <script>
+import { apiNowPlaying } from "@/api/movie";
+import { setWH } from "@/utils";
 export default {
-  name: "nowPlaying"
+  name: "nowPlaying",
+  data() {
+    return {
+      movieList: []
+    };
+  },
+  mounted() {
+    this.getApiNowPlaying();
+  },
+  methods: {
+    //获取正在热映数据
+    getApiNowPlaying() {
+      apiNowPlaying().then(res => {
+        var msg = res.data.msg;
+        if (msg === "ok") {
+          var movieList = res.data.data.movieList;
+          this.movieList = movieList;
+        }
+      });
+    }
+  }
 };
 </script>
 
@@ -176,6 +95,16 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.dd_icon{
+  position: absolute;
+  right: -5px;
+  font-size: 12px;
+  padding: 3px 8px;
+  border: 1px solid #3797f0;
+  border-radius: 2px;
+  background: #37b5f0;
+  color: #fff;
+}
 .movie_body .info_list .grade {
   font-weight: 700;
   color: #faaf00;
@@ -197,5 +126,7 @@ export default {
   border-radius: 4px;
   font-size: 12px;
   cursor: pointer;
+  position: relative;
+  top: 30px;
 }
 </style>
